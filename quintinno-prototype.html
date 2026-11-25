@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quintinno Power Check: Prototype</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#1d2a24;--mute:#5b6a62;--line:#dcd8cc;--brand:#0f7a4d;--brand-ink:#fff;--soft:#e4f3ea;--warn:#fff3d6;--warn-ink:#6b4b00;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121815;--card:#1b231f;--ink:#eef3ef;--mute:#a3b2aa;--line:#33403a;--brand:#3ec988;--brand-ink:#06251a;--soft:#1c3328;--warn:#3a3016;--warn-ink:#f3d98b;--bad:#ff8b82;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121815;--card:#1b231f;--ink:#eef3ef;--mute:#a3b2aa;--line:#33403a;--brand:#3ec988;--brand-ink:#06251a;--soft:#1c3328;--warn:#3a3016;--warn-ink:#f3d98b;--bad:#ff8b82;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:1.45rem;margin:4px 0 2px}h2{font-size:1.15rem;margin:0 0 6px}h3{font-size:1rem;margin:14px 0 6px}
+p{margin:6px 0}.mute{color:var(--mute);font-size:.88rem}
+.note{background:var(--warn);color:var(--warn-ink);border-radius:10px;padding:8px 12px;font-size:.85rem;margin:10px 0}
+nav{display:flex;gap:6px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0;z-index:5;overflow-x:auto}
+nav button{flex:1;min-width:90px;padding:10px 8px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-size:.85rem;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.biz{padding:14px 8px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;text-align:center}
+.biz span{display:block;font-size:1.8rem}.biz[aria-pressed="true"]{border-color:var(--brand);background:var(--soft)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+select,input[type=number],input[type=text],textarea{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+input[type=number]{width:110px}textarea{width:100%;min-height:64px}input[type=text]{width:100%}
+input[type=range]{width:100%;accent-color:var(--brand)}
+label.l{display:block;font-weight:600;margin:12px 0 4px}
+.big{font-size:2rem;font-weight:700;color:var(--brand);line-height:1.1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:var(--soft);padding:4px 10px;border-radius:99px;font-size:.85rem}
+.bar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+.step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}
+.dot{flex:none;width:34px;height:34px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.stay{border:2px dashed var(--brand);border-radius:14px;padding:14px;text-align:center;background:var(--soft)}
+.stay .big{font-size:2.4rem}
+.opts label{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin:5px 0;cursor:pointer}
+.opts input{margin-right:8px;accent-color:var(--brand)}
+.btn{background:var(--brand);color:var(--brand-ink);border:0;padding:11px 16px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;margin-top:10px}
+.out{white-space:pre-wrap;background:var(--soft);border-radius:10px;padding:12px;font-size:.9rem;margin-top:10px}
+.pos{color:var(--brand);font-weight:700}.neg{color:var(--bad);font-weight:700}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>⚡ Power Check</h1>
+<p class="mute">Three ideas to help small business owners choose and trust backup power: a starter kit for your shop, a savings check against diesel, and flexible ways to pay.</p>
+<div class="note">Prototype for discussion. All numbers are estimates and sample values, not final Quintinno prices or product specs.</div>
+
+<nav role="tablist">
+<button role="tab" data-t="shop" aria-selected="true">1. Starter kit</button>
+<button role="tab" data-t="save" aria-selected="false">2. Savings check</button>
+<button role="tab" data-t="pay" aria-selected="false">3. Ways to pay</button>
+<button role="tab" data-t="fb" aria-selected="false">4. Your view</button>
+</nav>
+
+<!-- TAB 1 -->
+<section id="shop">
+<div class="card">
+<h2>What kind of business do you run?</h2>
+<p class="mute"><b>Idea 1: Starter kit.</b> Solves: owners can’t work out how much power they need. The kit is picked for your type of business, in plain words.</p>
+<div class="grid" id="bizGrid"></div>
+</div>
+<div class="card" id="itemsCard" hidden>
+<h2>What must keep running during a power cut?</h2>
+<p class="mute">Choose how many of each. You don’t need to know any watts.</p>
+<div id="items"></div>
+<label class="l" for="hrs">How many hours of backup do you want? <b id="hrsV">3</b> hours</label>
+<input type="range" id="hrs" min="1" max="10" value="3">
+</div>
+<div class="card" id="resCard" hidden>
+<h2>Your backup, in plain words</h2>
+<p>You need roughly</p>
+<div class="big" id="kwh">0 kWh</div>
+<p id="sizeTxt"></p>
+<div class="chips" id="chips"></div>
+<p class="mute" id="peakTxt"></p>
+<p class="mute">Sizes (small, medium, large) are concept sizes to talk about, not product models.</p>
+</div>
+</section>
+
+<!-- TAB 2 -->
+<section id="save" hidden>
+<div class="card">
+<h2>What do power cuts cost you today?</h2>
+<p class="mute"><b>Idea 2: Savings check against diesel.</b> Solves: owners can’t tell if a purchase will pay off. You enter your own numbers and see both sides.</p>
+<label class="l" for="fuel">Monthly spend on diesel or petrol for your generator (₹)</label>
+<input type="number" id="fuel" value="3000" min="0" step="100">
+<label class="l" for="oh">Hours of power cut in a month</label>
+<input type="number" id="oh" value="40" min="0" step="1">
+<p class="mute">A World Bank survey found Indian retailers faced about 65 hours of outages in a typical month. Use your own number.</p>
+<label class="l" for="lost">Sales you lose per hour when the power is out (₹)</label>
+<input type="number" id="lost" value="300" min="0" step="50">
+<label class="l" for="cov">Share of cut hours your current backup covers: <b id="covV">50</b>%</label>
+<input type="range" id="cov" min="0" max="100" step="5" value="50">
+</div>
+<div class="card">
+<h2>With a rented battery unit</h2>
+<label class="l" for="plan">Sample monthly rent (₹)</label>
+<input type="number" id="plan" value="2500" min="0" step="100">
+<p class="mute">Placeholder price. Change it to see what would make sense for you.</p>
+<label class="l" for="cov2">Share of cut hours the unit covers: <b id="cov2V">90</b>%</label>
+<input type="range" id="cov2" min="0" max="100" step="5" value="90">
+</div>
+<div class="card" id="saveRes"></div>
+</section>
+
+<!-- TAB 3 -->
+<section id="pay" hidden>
+<div class="card">
+<h2>Pick a way to pay that suits your shop</h2>
+<p class="mute"><b>Idea 3: Rent, pay per use or lease to own.</b> Solves: a big upfront payment is too risky when income is thin and changes day to day. All prices here are samples you can change.</p>
+</div>
+<div class="card"><h3>Daily or festival pass</h3><p class="mute">Pay only for the days you need it, like wedding or festival season.</p>
+<label class="l" for="pdaily">Sample price per day (₹)</label><input type="number" id="pdaily" value="150" min="0" step="10"><p id="r1"></p></div>
+<div class="card"><h3>Monthly rent</h3><p class="mute">Uses the sample monthly rent from the Savings check tab.</p><p id="r2"></p></div>
+<div class="card"><h3>Pay per use</h3><p class="mute">Pay only for the hours of power cut the unit covers.</p>
+<label class="l" for="puse">Sample price per covered hour (₹)</label><input type="number" id="puse" value="40" min="0" step="5"><p id="r3"></p></div>
+<div class="card"><h3>Lease to own</h3><p class="mute">Small monthly payments, and the unit is yours at the end.</p>
+<label class="l" for="prto">Sample monthly payment (₹)</label><input type="number" id="prto" value="3000" min="0" step="100">
+<label class="l" for="pmon">Number of months</label><input type="number" id="pmon" value="18" min="1" step="1"><p id="r4"></p></div>
+<p class="mute">Which of these would suit your shop best, and why?</p>
+</section>
+
+<!-- TAB 4 -->
+<section id="fb" hidden>
+<div class="card">
+<h2>Tell us what you think</h2>
+<p class="mute">There are no right answers. We want to learn from you.</p>
+<label class="l" for="who">Name and business (optional)</label>
+<input type="text" id="who">
+<label class="l" for="q1">What did you notice first?</label>
+<textarea id="q1"></textarea>
+<label class="l">Which part would help you most?</label>
+<div class="opts" id="q2">
+<label><input type="radio" name="q2" value="My shop (what I need)">My shop: what I need</label>
+<label><input type="radio" name="q2" value="Savings">Savings</label>
+<label><input type="radio" name="q2" value="Ways to pay">Ways to pay</label>
+
+</div>
+<label class="l">What would still worry you?</label>
+<div class="opts" id="q3">
+<label><input type="radio" name="q3" value="Price">Price</label>
+<label><input type="radio" name="q3" value="Not sure it will work for my shop">Not sure it will work for my shop</label>
+<label><input type="radio" name="q3" value="Repairs and support nearby">Repairs and support nearby</label>
+<label><input type="radio" name="q3" value="Too hard to understand">Too hard to understand</label>
+<label><input type="radio" name="q3" value="Nothing">Nothing</label>
+</div>
+<label class="l" for="q4">What would you change or add?</label>
+<textarea id="q4"></textarea>
+<button class="btn" id="mk">Make interview notes</button>
+<div class="out" id="notes" hidden></div>
+</div>
+</section>
+</div>
+
+<script>
+var BIZ={
+cart:{n:"Food cart",i:"🍢",it:[["Mixer or grinder",500,.3,1],["LED lights",10,1,3],["Billing phone or machine",30,1,1],["Small fridge or cooler",120,.5,0]]},
+dairy:{n:"Dairy or grocery",i:"🥛",it:[["Chest freezer",150,.5,1],["Display fridge",200,.5,1],["LED lights",10,1,3],["Billing machine",30,1,1],["Fan",60,1,1]]},
+tailor:{n:"Tailoring",i:"🧵",it:[["Electric sewing machine",100,.6,2],["Iron",1000,.2,1],["LED lights",10,1,4],["Fan",60,1,2]]},
+salon:{n:"Salon",i:"💇",it:[["Hair dryer",1200,.3,1],["Straightener",90,.5,1],["LED lights",10,1,6],["Fan",60,1,2],["Billing and booking phone",30,1,1]]}
+};
+var cur=null,$=function(id){return document.getElementById(id)};
+function tab(t){["shop","save","pay","fb"].forEach(function(x){$(x).hidden=x!==t});
+document.querySelectorAll("nav button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===t)});window.scrollTo(0,0)}
+document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){tab(b.dataset.t)}});
+var g=$("bizGrid");
+Object.keys(BIZ).forEach(function(k){var b=document.createElement("button");b.className="biz";b.setAttribute("aria-pressed","false");
+b.innerHTML="<span>"+BIZ[k].i+"</span>"+BIZ[k].n;b.onclick=function(){pick(k)};b.dataset.k=k;g.appendChild(b)});
+function pick(k){cur=k;document.querySelectorAll(".biz").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.k===k)});
+var h="";BIZ[k].it.forEach(function(x,i){h+='<div class="row"><span>'+x[0]+'</span><select data-i="'+i+'" aria-label="'+x[0]+'">';
+for(var q=0;q<=6;q++)h+='<option'+(q===x[3]?" selected":"")+'>'+q+'</option>';h+='</select></div>'});
+$("items").innerHTML=h;$("itemsCard").hidden=false;$("resCard").hidden=false;
+document.querySelectorAll("#items select").forEach(function(s){s.onchange=calc});calc()}
+function calc(){if(!cur)return;var hrs=+$("hrs").value;$("hrsV").textContent=hrs;var wh=0,pk=0,ch=[];
+BIZ[cur].it.forEach(function(x,i){var q=+document.querySelector('#items select[data-i="'+i+'"]').value;
+if(q>0){wh+=x[1]*q*x[2]*hrs;pk+=x[1]*q;ch.push(q+" × "+x[0])}});
+var kwh=wh/1000;$("kwh").textContent=kwh.toFixed(1)+" kWh";
+var s=kwh<=1?"Small":kwh<=3?"Medium":"Large";
+$("sizeTxt").innerHTML=ch.length?"That points to a <b>"+s+"</b> battery unit for "+hrs+" hours of backup.":"Choose at least one item above.";
+$("chips").innerHTML=ch.map(function(c){return'<span class="chip">'+c+'</span>'}).join("");
+$("peakTxt").textContent=pk>1500?"Heavy items like this start with a big jolt, so the unit must be built to handle that without tripping.":"";}
+$("hrs").oninput=calc;
+function fmt(n){return "₹"+Math.round(n).toLocaleString("en-IN")}
+function sv(){var f=+$("fuel").value||0,oh=+$("oh").value||0,l=+$("lost").value||0,c=+$("cov").value,p=+$("plan").value||0,c2=+$("cov2").value;
+$("covV").textContent=c;$("cov2V").textContent=c2;
+var lossNow=oh*l*(1-c/100),now=f+lossNow,lossNew=oh*l*(1-c2/100),nw=p+lossNew,d=now-nw;
+$("saveRes").innerHTML="<h2>Side by side, each month</h2>"+
+'<div class="row"><span>Today: diesel or petrol</span><b>'+fmt(f)+'</b></div>'+
+'<div class="row"><span>Today: sales lost in cuts</span><b>'+fmt(lossNow)+'</b></div>'+
+'<div class="row"><span><b>Total today</b></span><b>'+fmt(now)+'</b></div>'+
+'<div class="row"><span>With unit: rent</span><b>'+fmt(p)+'</b></div>'+
+'<div class="row"><span>With unit: sales lost in cuts</span><b>'+fmt(lossNew)+'</b></div>'+
+'<div class="row"><span><b>Total with unit</b></span><b>'+fmt(nw)+'</b></div>'+
+'<p style="margin-top:12px">'+(d>=0?'You could be better off by <span class="pos">'+fmt(d)+' a month</span>.':'On these numbers it would cost <span class="neg">'+fmt(-d)+' more a month</span>. Try changing the rent or coverage to see what works for you.')+'</p>'+
+'<p class="mute">An estimate from the numbers you entered. A trial would show your real figures.</p>'}
+function pay(){var oh=+$("oh").value||0,c2=+$("cov2").value,p=+$("plan").value||0,dp=+$("pdaily").value||0,pu=+$("puse").value||0,ro=+$("prto").value||0,mo=+$("pmon").value||1;
+$("r1").innerHTML="10 busy days would cost <b>"+fmt(dp*10)+"</b>. You stop paying when the rush ends.";
+$("r2").innerHTML="<b>"+fmt(p)+"</b> a month. You stop when you no longer need it, and you never own the unit.";
+$("r3").innerHTML="About <b>"+fmt(oh*c2/100*pu)+"</b> in a month with "+oh+" hours of cuts. A quiet month costs less.";
+$("r4").innerHTML="<b>"+fmt(ro)+"</b> a month for "+mo+" months, "+fmt(ro*mo)+" in total. Then the unit is yours."}
+["fuel","oh","lost","cov","plan","cov2","pdaily","puse","prto","pmon"].forEach(function(id){$(id).oninput=function(){sv();pay()}});sv();pay();
+$("mk").onclick=function(){function r(n){var e=document.querySelector('input[name="'+n+'"]:checked');return e?e.value:"(no answer)"}
+var t="Interview notes\nOwner: "+($("who").value||"(not given)")+"\nBusiness type tried: "+(cur?BIZ[cur].n:"(none)")+"\n\nFirst noticed: "+($("q1").value||"(no answer)")+"\nMost helpful part: "+r("q2")+"\nMain worry: "+r("q3")+"\nWould change or add: "+($("q4").value||"(no answer)");
+var o=$("notes");o.textContent=t;o.hidden=false}
+</script>
+</body>
+</html>
